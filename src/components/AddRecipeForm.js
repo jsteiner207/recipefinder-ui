@@ -3,6 +3,9 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
 import IngredientListForm from "./IngredientListForm";
+import { db } from "./firebase-config";
+
+import { collection, addDoc } from "firebase/firestore";
 
 const AddRecipeForm = ({ onClose }) => {
   const [recipe, setRecipe] = useState({
@@ -11,15 +14,22 @@ const AddRecipeForm = ({ onClose }) => {
     directions: "",
   });
 
+  const recipesCollectionRef = collection(db, "recipes");
+
   const getIngredients = (newIngredients) => {
     setRecipe({ ...recipe, ingredients: newIngredients });
   };
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     setRecipe({
       name: "",
       ingredients: [],
       directions: "",
+    });
+    await addDoc(recipesCollectionRef, {
+      name: recipe.name,
+      ingredients: recipe.ingredients,
+      directions: recipe.directions,
     });
     onClose();
   };

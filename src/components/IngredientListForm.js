@@ -2,18 +2,8 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import "./IngredientListForm.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { baseIngredients } from "./ingredients";
 const IngredientListForm = (props) => {
-  const baseIngredients = [
-    "corn",
-    "cornbeef",
-    "milk",
-    "beef",
-    "jelly",
-    "butter",
-    "cheddar cheese",
-  ];
-
   let newIngredients = props.ingredients;
 
   const [ing, setIng] = useState("");
@@ -30,13 +20,37 @@ const IngredientListForm = (props) => {
   };
 
   const handleKeyDown = (e) => {
-
     if (e.key !== "Enter") return;
     const value = e.target.value;
     if (!value.trim()) return;
     newIngredients.push(value);
     setIng("");
     props.refreshIngredients(newIngredients);
+  };
+
+  const ListOfIngredients = () => {
+    return (
+      ing !== "" && (
+        <div className="search-result-container">
+          {baseIngredients
+            .filter((ingredient) => {
+              return ingredient.includes(ing);
+            })
+            .map(
+              (ingredient, index) =>
+                index <= 10 && (
+                  <div
+                    key={index}
+                    className="search-result-item"
+                    onClick={() => handleClickedResult(ingredient)}
+                  >
+                    {ingredient}
+                  </div>
+                )
+            )}
+        </div>
+      )
+    );
   };
 
   return (
@@ -64,23 +78,7 @@ const IngredientListForm = (props) => {
           value={ing}
         />
       </Form.Group>
-      {ing !== "" && (
-        <div className="search-result-container">
-          {baseIngredients
-            .filter((ingredient) => {
-              return ingredient.includes(ing);
-            })
-            .map((ingredient, index) => (
-              <div
-                key={index}
-                className="search-result-item"
-                onClick={() => handleClickedResult(ingredient)}
-              >
-                {ingredient}
-              </div>
-            ))}
-        </div>
-      )}
+      <ListOfIngredients />
     </React.Fragment>
   );
 };
